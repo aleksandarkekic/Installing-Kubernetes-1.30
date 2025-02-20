@@ -87,3 +87,30 @@ apt-get update
 apt-get install -y kubelet=1.30.3-1.1 kubeadm=1.30.3-1.1 kubectl=1.30.3-1.1
 apt-mark hold kubelet kubeadm kubectl
 ```
+Enable kubelet.
+```bash
+systemctl enable --now kubelet
+```
+
+# Install critctl
+CRI-O is an implementation of the Container Runtime Interface (CRI) used by the kubelet to interact with container runtimes.
+Install crictl by downloading the binary to the system.
+```bash
+export CRICTL_VERSION="v1.30.1"
+export CRICTL_ARCH=$(dpkg --print-architecture)
+wget https://github.com/kubernetes-sigs/cri-tools/releases/download/$CRICTL_VERSION/crictl-$CRICTL_VERSION-linux-$CRICTL_ARCH.tar.gz
+tar zxvf crictl-$CRICTL_VERSION-linux-$CRICTL_ARCH.tar.gz -C /usr/local/bin
+rm -f crictl-$CRICTL_VERSION-linux-$CRICTL_ARCH.tar.gz
+```
+Verify crictl is installed.
+```bash
+crictl version
+```
+# Install kubernetes on control node
+The control node is where the Kubernetes control plane components will be installed. This includes the API server, controller manager, scheduler, and etcd. The control node will also run the CNI plugin to provide networking for the cluster.
+
+# Control plane installation with kubeadm
+Using kubeadm, install the Kubernetes with the kubeadm init command. This will install the control plane components and create the necessary configuration files.
+```bash
+sudo kubeadm init --control-plane-endpoint "LOAD_BALANCER_DNS:LOAD_BALANCER_PORT" --upload-certs
+```
